@@ -38,4 +38,10 @@ export const YearText = styled.Text`
   color: #303036;
 `;
 
-export const Star = styled(FontAwesome).attrs({ name: "star", size: 35 })``;
+export const Star = styled(FontAwesome).attrs(
+  ({ isFavorite }: { isFavorite: boolean }) => ({
+    name: "star",
+    size: 35,
+    color: isFavorite ? "#33FFFF" : "#d7d7d7",
+  })
+)``;

@@ -10,3 +10,7 @@ export interface EntireResponse {
   actualPage: number;
   totalOfPages: number;
 }
+
+export interface FavoritesMovies {
+  imdbID: string;
+}

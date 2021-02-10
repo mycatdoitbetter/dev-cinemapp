@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Dispatch, useState, useEffect } from "react";
 import { FlatList } from "react-native";
 
 import searchPlaceHolder from "../../../assets/Search/popcorn_placeholder.png";
 import Movie from "../../components/Movie";
+import { getData } from "../../store/AsyncStorage";
 import {
   Container,
   Title,
@@ -11,6 +12,8 @@ import {
   PlaceHolderEmptyList,
   EmptyContentText,
 } from "./styles";
+
+import { IMovie } from "~/interfaces";
 
 const fakeResult = [
   {
@@ -31,7 +34,28 @@ const fakeResult = [
   },
 ];
 
+const getMovies = async (
+  setFavoriteMovies: Dispatch<IMovie[]>
+): Promise<void> => {
+  const list = await getData();
+  console.log("list favorites", list);
+  setFavoriteMovies(list);
+};
+
 const Favorites: React.FC = () => {
+  const [refreshing, setRefreshing] = useState(false);
+  const [favoriteMovies, setFavoriteMovies] = useState<IMovie[]>([]);
+
+  const getAll = async () => {
+    setRefreshing(true);
+    await getMovies(setFavoriteMovies);
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    getAll();
+  }, []);
+
   const ListEmptyComponent = () => (
     <ListEmptyContainer>
       <PlaceHolderEmptyList resizeMode="contain" source={searchPlaceHolder} />
@@ -46,16 +70,18 @@ const Favorites: React.FC = () => {
       <Title>Cinema APP - Favoritos</Title>
       <Description>Bem vindo ao mundo espetacular do cinema!</Description>
       <FlatList
-        data={fakeResult}
+        data={favoriteMovies}
         contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
           <Movie
-            title={item.Title}
-            year={item.Year}
-            image={item.Poster}
+            Title={item.Title}
+            Year={item.Year}
+            Poster={item.Poster}
             imdbID={item.imdbID}
           />
         )}
+        refreshing={refreshing}
+        onRefresh={() => getAll()}
         ListEmptyComponent={ListEmptyComponent}
         keyExtractor={(_, index) => String(index)}
       />

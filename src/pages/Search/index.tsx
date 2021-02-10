@@ -1,6 +1,6 @@
 /* eslint-disable import/order */
-import React, { useState, useEffect } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, TouchableOpacity } from "react-native";
 
 import { IMovie } from "../../interfaces";
 
@@ -33,34 +33,40 @@ const Search: React.FC = () => {
   const [movieToSearch, setMovieToSearch] = useState("");
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [onLastPage, setOnLastPage] = useState(false);
 
-  const handleNextPage = (totalOfPages: number, actualPage: number) => {
+  const handleNextPage = (
+    totalOfPages: number,
+    actualPage: number
+  ): boolean => {
     if (actualPage < totalOfPages) {
       setActualPage(actualPage + 1);
+      setOnLastPage(false);
+      return true;
     } else {
-      alert("Última pagina");
+      alert("Esses são os últimos resultados!");
+      setOnLastPage(true);
+      return false;
     }
   };
 
   const search = async () => {
-    const entireData = await getMovies(movieToSearch, actualPage);
+    setOnLastPage(false);
+    const entireData = await getMovies(movieToSearch, 1);
     setMovies(entireData.movies);
     setTotalOfPages(entireData.totalOfPages);
-    setActualPage(actualPage);
-    console.log(entireData.actualPage, entireData.totalOfPages);
+    setActualPage(entireData.actualPage);
   };
 
   const searchMore = async () => {
     handleNextPage(totalOfPages, actualPage);
-    setIsFetching(true);
-    const entireData = await getMovies(movieToSearch, actualPage + 1);
-    console.log(entireData.movies);
-    setIsFetching(false);
-    setMovies((prev) => [...prev, ...entireData.movies]);
-    // setTotalOfPages(entireData.totalOfPages);
-    // setActualPage(actualPage);
-
-    // search();
+    if (actualPage < totalOfPages) {
+      setIsFetching(true);
+      const entireData = await getMovies(movieToSearch, actualPage + 1);
+      console.log(entireData.movies);
+      setIsFetching(false);
+      setMovies((prev) => [...prev, ...entireData.movies]);
+    }
   };
 
   const ListEmptyComponent = () => (
@@ -75,7 +81,7 @@ const Search: React.FC = () => {
   );
 
   const ListFooterComponent = () => {
-    if (movies?.length <= 0) return null;
+    if (movies?.length <= 0 || onLastPage) return null;
 
     return (
       <TouchableOpacity onPress={() => searchMore()}>
