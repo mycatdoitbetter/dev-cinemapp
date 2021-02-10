@@ -4,11 +4,11 @@
     "slug": "cinemapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/favicon.png",
+    "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#050401"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -17,8 +17,13 @@
     "ios": {
       "supportsTablet": true
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "android": {
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#050401"
+      },
+      "package": "com.mycatdoitbetter.cinemapp"
     }
   }
 }

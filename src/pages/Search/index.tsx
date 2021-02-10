@@ -28,13 +28,39 @@ import {
 } from "./styles";
 
 const Search: React.FC = () => {
+  const [actualPage, setActualPage] = useState(1);
+  const [totalOfPages, setTotalOfPages] = useState(10);
   const [movieToSearch, setMovieToSearch] = useState("");
   const [movies, setMovies] = useState<IMovie[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const handleNextPage = (totalOfPages: number, actualPage: number) => {
+    if (actualPage < totalOfPages) {
+      setActualPage(actualPage + 1);
+    } else {
+      alert("Última pagina");
+    }
+  };
 
   const search = async () => {
-    const entireData = await getMovies(movieToSearch, 1);
+    const entireData = await getMovies(movieToSearch, actualPage);
     setMovies(entireData.movies);
+    setTotalOfPages(entireData.totalOfPages);
+    setActualPage(actualPage);
     console.log(entireData.actualPage, entireData.totalOfPages);
+  };
+
+  const searchMore = async () => {
+    handleNextPage(totalOfPages, actualPage);
+    setIsFetching(true);
+    const entireData = await getMovies(movieToSearch, actualPage + 1);
+    console.log(entireData.movies);
+    setIsFetching(false);
+    setMovies((prev) => [...prev, ...entireData.movies]);
+    // setTotalOfPages(entireData.totalOfPages);
+    // setActualPage(actualPage);
+
+    // search();
   };
 
   const ListEmptyComponent = () => (
@@ -48,13 +74,19 @@ const Search: React.FC = () => {
     </ListEmptyContainer>
   );
 
-  const ListFooterComponent = () => (
-    <TouchableOpacity>
-      <FooterContainer>
-        <FooterText>Buscar mais filmes</FooterText>
-      </FooterContainer>
-    </TouchableOpacity>
-  );
+  const ListFooterComponent = () => {
+    if (movies?.length <= 0) return null;
+
+    return (
+      <TouchableOpacity onPress={() => searchMore()}>
+        <FooterContainer>
+          <FooterText>
+            {isFetching ? "Aguarde um momento..." : "Buscar mais filmes"}
+          </FooterText>
+        </FooterContainer>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <Container>
