@@ -14,7 +14,7 @@ const getMovies = async (
     return { movies: data.Search, totalOfPages, actualPage: page };
   } catch (error) {
     alert(
-      "Busca mal sucedidade. Verifique sua conexão, tente novamente mais tarde"
+      "Busca mal sucedida. Verifique sua conexão, tente novamente mais tarde"
     );
     return { movies: [], totalOfPages: 0, actualPage: 0 };
   }

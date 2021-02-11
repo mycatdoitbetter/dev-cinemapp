@@ -1,16 +1,10 @@
-/* eslint-disable import/order */
 import React, { useState } from "react";
 import { FlatList, TouchableOpacity } from "react-native";
 
-import { IMovie } from "../../interfaces";
-
-import Movie from "../../components/Movie";
-
-import getMovies from "../../services/movies";
-
 import searchPlaceHolder from "../../../assets/Search/popcorn_placeholder.png";
-
-// import api from "../../services/api";
+import Movie from "../../components/Movie";
+import { IMovie } from "../../interfaces";
+import getMovies from "../../services/movies";
 import {
   Container,
   Title,
@@ -28,13 +22,32 @@ import {
 } from "./styles";
 
 const Search: React.FC = () => {
+  /**
+   * States to manage the pagination of the API service.
+   * By default, i prefer to use 10 with the total pages.
+   */
   const [actualPage, setActualPage] = useState(1);
   const [totalOfPages, setTotalOfPages] = useState(10);
+
+  /**
+   * States to manage the search, get the movies on a
+   * array and the text field.
+   */
   const [movieToSearch, setMovieToSearch] = useState("");
   const [movies, setMovies] = useState<IMovie[]>([]);
+
+  /**
+   * States to manage the refresh and the "can refresh"
+   * feature
+   */
   const [isFetching, setIsFetching] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [onLastPage, setOnLastPage] = useState(false);
 
+  /**
+   * Return true with the actual page is minor than the total of page,
+   * btw, can refresh.
+   */
   const handleNextPage = (
     totalOfPages: number,
     actualPage: number
@@ -50,14 +63,22 @@ const Search: React.FC = () => {
     }
   };
 
+  /**
+   * Search by the input-search and reset all the states of refresh
+   */
   const search = async () => {
+    setIsRefreshing(true);
     setOnLastPage(false);
     const entireData = await getMovies(movieToSearch, 1);
     setMovies(entireData.movies);
     setTotalOfPages(entireData.totalOfPages);
     setActualPage(entireData.actualPage);
+    setIsRefreshing(false);
   };
 
+  /**
+   * Search more and change the pagination states
+   */
   const searchMore = async () => {
     handleNextPage(totalOfPages, actualPage);
     if (actualPage < totalOfPages) {
@@ -113,6 +134,7 @@ const Search: React.FC = () => {
 
       <FlatList
         data={movies}
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
         renderItem={({ item }) => (
           <Movie
@@ -124,6 +146,8 @@ const Search: React.FC = () => {
         )}
         ListEmptyComponent={ListEmptyComponent}
         ListFooterComponent={ListFooterComponent}
+        onRefresh={() => search()}
+        refreshing={isRefreshing}
         keyExtractor={(_, index) => String(index)}
       />
     </Container>

@@ -24,15 +24,7 @@ const addMovieToFavorites = async (movie: IMovie): Promise<any> => {
 };
 
 const removeMovieToFavorites = async (movies: IMovie[]): Promise<any> => {
-  // const favoriteMovies = await getData();
-
-  // // const indexOfFavorite = favoriteMovies.indexOf(movie);
-  // const favoriteArray = favoriteMovies;
-  // const newFavorites = favoriteArray.slice(indexOfFavorite, 1);
-
   await storeData(movies);
-
-  // return favoriteMovies;
 };
 
 const Movie: React.FC<IMovie> = ({ Title, Year, Poster, imdbID }: IMovie) => {
@@ -42,23 +34,12 @@ const Movie: React.FC<IMovie> = ({ Title, Year, Poster, imdbID }: IMovie) => {
 
   const isFavorite = favoriteMovies.find((movie) => movie.imdbID === imdbID);
 
-  // const removeOfFavorites = async () => {
-  //   if (isFavorite) {
-  //     const indexOfFavorite = favoriteMovies.indexOf(isFavorite);
-  //     const favoriteArray = favoriteMovies;
-  //     const newFavorites = favoriteArray.slice(indexOfFavorite, 1);
-  //     setFavoriteMovies(newFavorites);
-  //   }
-  // };
-
   const addToFavorites = async () => {
     if (isFavorite) {
-      const indexOfFavorite = favoriteMovies.indexOf(isFavorite);
       const newFavorites = favoriteMovies.filter(
         (item) => item.imdbID !== isFavorite.imdbID
       );
       await removeMovieToFavorites(newFavorites);
-      console.log("NEW", newFavorites, indexOfFavorite);
       setFavoriteMovies(newFavorites);
     } else {
       const favorites = await addMovieToFavorites({

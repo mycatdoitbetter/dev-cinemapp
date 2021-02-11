@@ -15,55 +15,39 @@ import {
 
 import { IMovie } from "~/interfaces";
 
-const fakeResult = [
-  {
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BOTY4YjI2N2MtYmFlMC00ZjcyLTg3YjEtMDQyM2ZjYzQ5YWFkXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    Title: "Batman Begins",
-    Type: "movie",
-    Year: "2005",
-    imdbID: "tt0372784",
-  },
-  {
-    Poster:
-      "https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
-    Title: "Batman v Superman: Dawn of Justice",
-    Type: "movie",
-    Year: "2016",
-    imdbID: "tt2975590",
-  },
-];
-
 const getMovies = async (
   setFavoriteMovies: Dispatch<IMovie[]>
 ): Promise<void> => {
   const list = await getData();
-  console.log("list favorites", list);
   setFavoriteMovies(list);
 };
 
 const Favorites: React.FC = () => {
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [favoriteMovies, setFavoriteMovies] = useState<IMovie[]>([]);
 
+  /**
+   * Get all favorites on the async storage
+   */
   const getAll = async () => {
     setRefreshing(true);
     await getMovies(setFavoriteMovies);
     setRefreshing(false);
   };
 
-  useEffect(() => {
-    getAll();
-  }, []);
-
   const ListEmptyComponent = () => (
     <ListEmptyContainer>
       <PlaceHolderEmptyList resizeMode="contain" source={searchPlaceHolder} />
       <EmptyContentText>
-        Parece que você ainda não favoritou nenhum filme.
+        Parece que você ainda não favoritou nenhum filme. Caso já tenha
+        adicionado, arrasta pra baixo pra atualizar a página! :D
       </EmptyContentText>
     </ListEmptyContainer>
   );
+
+  useEffect(() => {
+    getAll();
+  }, []);
 
   return (
     <Container>
